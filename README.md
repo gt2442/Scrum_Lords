@@ -1,2 +1,2 @@
 # Scrum_Lords
-COSC_620 Group Project Repo
+COSC_625 Group Project Repo
