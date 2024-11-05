@@ -1,111 +1,82 @@
-"""
-An application to create the meals of your wildest dreams.
-"""
-import requests
+# src/RecipeMatcher/app.py
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN
+from .pages.homePage import create_home_page
+from .pages.loginPage import create_login_page
+from .pages.mealdbTest import create_mealdb_test_page
 
-# Base URL for the API
-BASE_URL = "https://www.themealdb.com/api/json/v1/1"
-
-# API Function Definitions
-def search_meal_by_name(meal_name):
-    url = f"{BASE_URL}/search.php?s={meal_name}"
-    response = requests.get(url)
-    return response.json()
-
-def list_meals_by_first_letter(letter):
-    url = f"{BASE_URL}/search.php?f={letter}"
-    response = requests.get(url)
-    return response.json()
-
-def lookup_meal_by_id(meal_id):
-    url = f"{BASE_URL}/lookup.php?i={meal_id}"
-    response = requests.get(url)
-    return response.json()
-
-def get_random_meal():
-    url = f"{BASE_URL}/random.php"
-    response = requests.get(url)
-    return response.json()
-
-def list_all_categories():
-    url = f"{BASE_URL}/categories.php"
-    response = requests.get(url)
-    return response.json()
-
-def list_all(type):
-    url = f"{BASE_URL}/list.php?{type}=list"
-    response = requests.get(url)
-    return response.json()
-
-def filter_by_main_ingredient(ingredient):
-    url = f"{BASE_URL}/filter.php?i={ingredient}"
-    response = requests.get(url)
-    return response.json()
-
-def filter_by_category(category):
-    url = f"{BASE_URL}/filter.php?c={category}"
-    response = requests.get(url)
-    return response.json()
-
-def filter_by_area(area):
-    url = f"{BASE_URL}/filter.php?a={area}"
-    response = requests.get(url)
-    return response.json()
-
-# Toga Application with Integrated API Calls
-class RecipeMatcher(toga.App):
+class MyApp(toga.App):
     def startup(self):
-        main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
-        
-        # Text input for meal name search
-        self.meal_name_input = toga.TextInput(placeholder="Enter meal name", style=Pack(padding=5))
-        search_button = toga.Button(
-            "Search Meal by Name", on_press=self.search_meal_action, style=Pack(padding=5)
+        print("Starting up MyApp...")
+        self.main_window = toga.MainWindow(title=self.formal_name)
+
+        # Result display area for showing outputs
+        self.result_display = toga.MultilineTextInput(
+            readonly=True,
+            style=Pack(height=200, padding=5)
         )
 
-        # Button to get a random meal
-        random_button = toga.Button(
-            "Get Random Meal", on_press=self.get_random_meal_action, style=Pack(padding=5)
+        # Page switching buttons
+        nav_box = toga.Box(style=Pack(direction=COLUMN, padding=10, width=150))
+        home_button = toga.Button(
+            "Home Page",
+            on_press=self.show_home_page,
+            style=Pack(padding=5)
         )
-        
-        # Button to list all categories
-        category_button = toga.Button(
-            "List All Categories", on_press=self.list_all_categories_action, style=Pack(padding=5)
+        login_button = toga.Button(
+            "Login Page",
+            on_press=self.show_login_page,
+            style=Pack(padding=5)
+        )
+        mealdb_button = toga.Button(
+            "MealDB Test Page",
+            on_press=self.show_mealdb_test_page,
+            style=Pack(padding=5)
         )
 
-        # Display area for showing API results
-        self.result_display = toga.MultilineTextInput(readonly=True, style=Pack(height=200, padding=5))
+        nav_box.add(home_button)
+        nav_box.add(login_button)
+        nav_box.add(mealdb_button)
 
-        # Add widgets to the main box
-        main_box.add(self.meal_name_input)
-        main_box.add(search_button)
-        main_box.add(random_button)
-        main_box.add(category_button)
+        # Content area for displaying selected page
+        self.content_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+
+        # Main content area (nav_box and content_box side by side)
+        content_area = toga.Box(style=Pack(direction="row"))
+        content_area.add(nav_box)
+        content_area.add(self.content_box)
+
+        # Main layout (content_area above result_display)
+        main_box = toga.Box(style=Pack(direction="column"))
+        main_box.add(content_area)
         main_box.add(self.result_display)
 
-        # Main window setup
-        self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
+
+        # Show the home page by default
+        self.show_home_page()
+
         self.main_window.show()
 
-    # Action for search button
-    def search_meal_action(self, widget):
-        meal_name = self.meal_name_input.value
-        result = search_meal_by_name(meal_name)
-        self.result_display.value = str(result)  # Display result in the text area
+    # Methods for page switching
+    def show_home_page(self, widget=None):
+        # Remove existing children
+        for child in self.content_box.children[:]:
+            self.content_box.remove(child)
+        # Add the new home page widget
+        self.content_box.add(create_home_page(self))
 
-    # Action for random meal button
-    def get_random_meal_action(self, widget):
-        result = get_random_meal()
-        self.result_display.value = str(result)  # Display result in the text area
+    def show_login_page(self, widget=None):
+        # Remove existing children
+        for child in self.content_box.children[:]:
+            self.content_box.remove(child)
+        # Add the new login page widget
+        self.content_box.add(create_login_page(self.result_display))
 
-    # Action for list all categories button
-    def list_all_categories_action(self, widget):
-        result = list_all_categories()
-        self.result_display.value = str(result)  # Display result in the text area
-
-def main():
-    return RecipeMatcher()
+    def show_mealdb_test_page(self, widget=None):
+        # Remove existing children
+        for child in self.content_box.children[:]:
+            self.content_box.remove(child)
+        # Add the new MealDB test page widget
+        self.content_box.add(create_mealdb_test_page(self.result_display))
