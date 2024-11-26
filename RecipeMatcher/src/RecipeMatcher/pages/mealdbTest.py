@@ -2,7 +2,7 @@
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN
-from .api import search_meal_by_name, get_random_meal, list_all_categories
+from .api import search_meal_by_name, get_random_meal, list_all_categories, add_to_favorites
 
 def create_mealdb_test_page(result_display):
     main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
@@ -47,10 +47,23 @@ def create_mealdb_test_page(result_display):
 
     category_button = toga.Button("List All Categories", on_press=list_all_categories_action, style=Pack(padding=5))
 
+    def add_to_favorites_action(widget):
+        user_id = "test_user" #placeholder id for testing
+        meal_name = meal_name_input.value
+        result = add_to_favorites(user_id, meal_name)
+        if "success" in result:
+            display_text = result["success"]
+        else:
+            display_text = result.get("error", "An error occurred.")
+        result_display.value = display_text
+
+    favorite_button = toga.Button("Add Meal To Favorites", on_press=add_to_favorites_action, style=Pack(padding=5))
+
     # Add widgets to the main box
     main_box.add(meal_name_input)
     main_box.add(search_button)
     main_box.add(random_button)
     main_box.add(category_button)
+    main_box.add(favorite_button)
 
     return main_box
