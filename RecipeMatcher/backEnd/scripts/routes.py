@@ -34,3 +34,4 @@ def authenticate_user():
     else:
         print(f"Authentication failed for username: '{username}'")
         return jsonify({"error": "Invalid username or password"}), 401
+   

@@ -5,6 +5,7 @@ from toga.style.pack import COLUMN
 from .pages.homePage import create_home_page
 from .pages.loginPage import create_login_page
 from .pages.mealdbTest import create_mealdb_test_page
+from .pages.chatBotPage import create_chatbot_page  # Import the ChatBot page function
 
 class MyApp(toga.App):
     def startup(self):
@@ -34,10 +35,17 @@ class MyApp(toga.App):
             on_press=self.show_mealdb_test_page,
             style=Pack(padding=5)
         )
+        chatbot_button = toga.Button(
+    "ChatBot Page",
+    on_press=self.show_chatbot_page,  # Update to the correct handler
+    style=Pack(padding=5)
+)
+
 
         nav_box.add(home_button)
         nav_box.add(login_button)
         nav_box.add(mealdb_button)
+        nav_box.add(chatbot_button)
 
         # Content area for displaying selected page
         self.content_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
@@ -80,3 +88,11 @@ class MyApp(toga.App):
             self.content_box.remove(child)
         # Add the new MealDB test page widget
         self.content_box.add(create_mealdb_test_page(self.result_display))
+
+    def show_chatbot_page(self, widget=None):
+        # Remove existing children
+        for child in self.content_box.children[:]:
+            self.content_box.remove(child)
+        # Add the ChatBot page widget
+        self.content_box.add(create_chatbot_page(self.result_display))
+
