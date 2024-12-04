@@ -9,7 +9,7 @@ def create_home_page(app):
 
     # Welcome title
     title = toga.Label(
-        "Welcome to RecipeMatcher!", 
+        "Welcome to RecipeMatcher!",
         style=Pack(font_size=24, font_weight="bold", padding_bottom=10)
     )
 
@@ -21,14 +21,14 @@ def create_home_page(app):
 
     # Button for navigating to the MealDB Test page
     mealdb_button = toga.Button(
-        "Explore MealDB Recipes", 
+        "Explore MealDB Recipes",
         style=Pack(padding=5),
         on_press=app.show_mealdb_test_page
     )
 
     # Button for navigating to the Login page
     login_button = toga.Button(
-        "Login to Your Profile", 
+        "Login to Your Profile",
         style=Pack(padding=5),
         on_press=app.show_login_page
     )
