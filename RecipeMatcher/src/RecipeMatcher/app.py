@@ -5,12 +5,20 @@ from toga.style.pack import COLUMN
 from .pages.homePage import create_home_page
 from .pages.loginPage import create_login_page
 from .pages.mealdbTest import create_mealdb_test_page
-from .pages.chatBotPage import create_chatbot_page  # Import the ChatBot page function
+from .pages.chatBotPage import create_chatbot_page
+from .pages.api import ChatBot  # Import the ChatBot class from api.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class MyApp(toga.App):
     def startup(self):
         print("Starting up MyApp...")
         self.main_window = toga.MainWindow(title=self.formal_name)
+
+        # Create a ChatBot instance
+        self.chatbot = ChatBot(api_key=os.getenv("OPEN_AI_KEY"))
 
         # Result display area for showing outputs
         self.result_display = toga.MultilineTextInput(
@@ -36,11 +44,10 @@ class MyApp(toga.App):
             style=Pack(padding=5)
         )
         chatbot_button = toga.Button(
-    "ChatBot Page",
-    on_press=self.show_chatbot_page,  # Update to the correct handler
-    style=Pack(padding=5)
-)
-
+            "ChatBot Page",
+            on_press=self.show_chatbot_page,
+            style=Pack(padding=5)
+        )
 
         nav_box.add(home_button)
         nav_box.add(login_button)
@@ -69,30 +76,25 @@ class MyApp(toga.App):
 
     # Methods for page switching
     def show_home_page(self, widget=None):
-        # Remove existing children
-        for child in self.content_box.children[:]:
-            self.content_box.remove(child)
-        # Add the new home page widget
-        self.content_box.add(create_home_page(self))
+        self._load_page(create_home_page(self))
 
     def show_login_page(self, widget=None):
-        # Remove existing children
-        for child in self.content_box.children[:]:
-            self.content_box.remove(child)
-        # Add the new login page widget
-        self.content_box.add(create_login_page(self.result_display))
+        self._load_page(create_login_page(self.result_display))
 
     def show_mealdb_test_page(self, widget=None):
-        # Remove existing children
-        for child in self.content_box.children[:]:
-            self.content_box.remove(child)
-        # Add the new MealDB test page widget
-        self.content_box.add(create_mealdb_test_page(self.result_display))
+        self._load_page(create_mealdb_test_page(self.result_display))
 
     def show_chatbot_page(self, widget=None):
         # Remove existing children
         for child in self.content_box.children[:]:
             self.content_box.remove(child)
-        # Add the ChatBot page widget
-        self.content_box.add(create_chatbot_page(self.result_display))
 
+        # Add the ChatBot page widget
+        self.content_box.add(create_chatbot_page(self.result_display, self.chatbot))
+
+    def _load_page(self, page_content):
+        # Remove existing children
+        for child in self.content_box.children[:]:
+            self.content_box.remove(child)
+        # Add the new page widget
+        self.content_box.add(page_content)

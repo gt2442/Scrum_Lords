@@ -2,6 +2,8 @@
 import httpx
 import requests
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
 
 BASE_URL = "https://www.themealdb.com/api/json/v1/1"
 BACKEND_URL = "http://localhost:5000"  # Your Flask backend URL
@@ -46,41 +48,52 @@ def authenticate_user(username, password):
     else:
         return {"error": "Authentication failed"}
 
+load_dotenv()
+
 class ChatBot:
     def __init__(self, api_key):
         # Set your OpenAI API key
         self.client = OpenAI(api_key=api_key)
-        
+        self.conversation_history = []  # Store the conversation history
+        self.default_persona = (
+            "You are a helpful chef that generates meal plans and recipes."
+        )  # Default persona
+
+    def set_persona(self, persona):
+        """Set a new AI persona."""
+        self.default_persona = persona
+        self.messages = [{"role": "system", "content": self.default_persona}]
 
 
     def generate_meal_plan(self, prompt):
         """
-        Calls OpenAI API to generate a meal plan based on the user prompt.
+        Calls OpenAI API to generate a meal plan while maintaining conversation history.
         """
         try:
-            # Use the updated API method
-            completion = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",  
-                messages=[
-                    #Gothom
-                    # {"role": "system", "content": "You are a helpful chief that generates meal plans and recipes. I want you to respond in the tone of batman, randomly mention protecting gothom"},
-                   #Wabbits 
-                   # {"role": "system", "content": "You are a helpful chief that generates meal plans and recipes. Take the persona of Elmer Fudd randomly recommending rabbits as the side of a real meal"},
-                    #QuickConversation 
-                    # {"role": "system", "content": "You are a helpful chief that generates meal plans and recipes."+
-                    #  "Ask the user a few questions to get to the best meal for them then use those answers to find the proper meal"
-                    #  },
-                    #Main Function 
-                    # {"role": "system", "content": "You are a helpful chief that generates meal plans and recipes"},
+            # Append the user's input to the conversation history
+            self.conversation_history.append({"role": "user", "content": prompt})
 
-                   {"role": "system", "content": "You are a helpful chief that generates meal plans and recipes. Take the persona of Elmer Fudd randomly recommending rabbits as the side of a real meal"},
-                    {"role": "user", "content": prompt}
-                ],
+            # Call the API with the conversation history
+            completion = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=self.conversation_history,
                 temperature=0.5,
-                max_tokens=100
+                max_tokens=100,
             )
-            # Extract and return the response from the API
-            return completion.choices[0].message.content
+
+            # Extract the response
+            response = completion.choices[0].message.content
+
+            # Append the AI's response to the conversation history
+            self.conversation_history.append({"role": "assistant", "content": response})
+
+            return response
         except Exception as e:
             print(f"Error during OpenAI API call: {e}")
             return "Sorry, there was an error while generating the response."
+
+    def clear_conversation(self):
+        """
+        Clears the conversation history for a new session.
+        """
+        self.conversation_history = []
