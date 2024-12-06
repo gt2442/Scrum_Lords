@@ -11,6 +11,12 @@ def create_login_page(result_display):
     username_input = toga.TextInput(placeholder="Enter username", style=Pack(padding=5))
     password_input = toga.PasswordInput(placeholder="Enter password", style=Pack(padding=5))
 
+    result_display = toga.MultilineTextInput(
+        value="",
+        readonly=True,
+        style=Pack(width=400, height=150, padding=(10, 0))
+    )
+
     # Function to handle login
     def login_action(widget):
         username = username_input.value
@@ -62,6 +68,7 @@ def create_login_page(result_display):
     main_box.add(add_email_input)    
     main_box.add(add_password_input)     
     main_box.add(add_user_button)
+    main_box.add(result_display)
 
     return main_box
 
