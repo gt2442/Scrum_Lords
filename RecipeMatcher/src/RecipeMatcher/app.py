@@ -8,6 +8,7 @@ from .pages.homePage import create_home_page
 from .pages.loginPage import create_login_page
 from .pages.mealdbTest import create_mealdb_test_page
 from .pages.chatBotPage import create_chatbot_page
+from .pages.mealQueryPage import create_meal_query_page
 from .pages.api import ChatBot  # Import the ChatBot class from api.py
 import os
 from dotenv import load_dotenv
@@ -106,6 +107,9 @@ class RecipeMatcher(toga.App):
         """Clears the current content in the content box."""
         for child in self.content_box.children[:]:
             self.content_box.remove(child)
+
+    def show_meal_query_page(self, widget):
+        self.main_window.content = create_meal_query_page()
 
 def main():
     return RecipeMatcher()

@@ -55,6 +55,17 @@ def list_all_categories():
     response = requests.get(url)
     return response.json()
 
+def get_meals_by_category(category):
+    """
+    Fetch meals by category using TheMealDB API.
+    """
+    try:
+        response = requests.get(f"{BASE_URL}/filter.php", params={"c": category})
+        response.raise_for_status()
+        return response.json()  # Expected response: {"meals": [...]}
+    except requests.RequestException as e:
+        return {"error": str(e)}
+
 favorites = {}
 
 def add_to_favorites(user_id, meal_name):
