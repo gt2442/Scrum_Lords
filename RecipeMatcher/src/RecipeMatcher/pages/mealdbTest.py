@@ -1,10 +1,16 @@
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN
-from .api import search_meal_by_name, get_random_meal, list_all_categories, generate_grocery_list
+from .api import search_meal_by_name, get_random_meal, list_all_categories, generate_grocery_list, add_to_favorites
 
 def create_mealdb_test_page(result_display):
     main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+
+    result_display = toga.MultilineTextInput(
+        value="",
+        readonly=True,
+        style=Pack(width=400, height=150, padding=(10, 0))
+    )
 
     # Text input for searching meals by name
     meal_name_input = toga.TextInput(placeholder="Enter meal name", style=Pack(padding=5))
@@ -84,6 +90,17 @@ def create_mealdb_test_page(result_display):
         result_display.value = display_text
 
     grocery_button = toga.Button("Generate Grocery List", on_press=generate_grocery_list_action, style=Pack(padding=5))
+    def add_to_favorites_action(widget):
+        user_id = "test_user" #placeholder id for testing
+        meal_name = meal_name_input.value
+        result = add_to_favorites(user_id, meal_name)
+        if "success" in result:
+            display_text = result["success"]
+        else:
+            display_text = result.get("error", "An error occurred.")
+        result_display.value = display_text
+
+    favorite_button = toga.Button("Add Meal To Favorites", on_press=add_to_favorites_action, style=Pack(padding=5))
 
     # Add widgets to the main box
     main_box.add(meal_name_input)
@@ -91,5 +108,7 @@ def create_mealdb_test_page(result_display):
     main_box.add(random_button)
     main_box.add(category_button)
     main_box.add(grocery_button)
+    main_box.add(favorite_button)
+    main_box.add(result_display)
 
     return main_box

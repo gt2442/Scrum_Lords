@@ -2,10 +2,16 @@
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, CENTER
-from RecipeMatcher.api import get_recipe_by_ingredient, get_meal_details, get_all_categories
+from .api import get_recipe_by_ingredient, get_meal_details, get_all_categories
 
 def create_recipe_generation_page(result_display):
     main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+
+    result_display = toga.MultilineTextInput(
+        value="",
+        readonly=True,
+        style=Pack(width=400, height=150, padding=(10, 0))
+    )
 
     # Ingredient input
     ingredient_input = toga.TextInput(placeholder="Enter main ingredient", style=Pack(padding=5))
@@ -77,5 +83,6 @@ def create_recipe_generation_page(result_display):
     main_box.add(search_button)
     main_box.add(view_button)
     main_box.add(recipe_display)
+    main_box.add(result_display)
 
     return main_box
