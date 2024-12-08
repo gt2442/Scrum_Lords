@@ -9,13 +9,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def create_app():
+    """Create and configure the Flask app."""
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+
+    # Database configuration
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///app.db")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # Initialize database
     db.init_app(app)
 
-    # Register routes
+    # Register blueprints
     app.register_blueprint(main_routes)
 
     return app
