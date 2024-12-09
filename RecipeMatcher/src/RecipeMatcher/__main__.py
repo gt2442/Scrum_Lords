@@ -1,8 +1,8 @@
-from RecipeMatcher.app import MyApp
+from RecipeMatcher.app import RecipeMatcher
 
 def main():
     print("Starting MyApp from __main__.py...")
-    return MyApp()
+    return RecipeMatcher()
 
 if __name__ == "__main__":
     main().main_loop()

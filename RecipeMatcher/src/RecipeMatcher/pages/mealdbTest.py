@@ -6,6 +6,12 @@ from .api import search_meal_by_name, get_random_meal, list_all_categories, gene
 def create_mealdb_test_page(result_display):
     main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
 
+    result_display = toga.MultilineTextInput(
+        value="",
+        readonly=True,
+        style=Pack(width=400, height=150, padding=(10, 0))
+    )
+
     # Text input for searching meals by name
     meal_name_input = toga.TextInput(placeholder="Enter meal name", style=Pack(padding=5))
 
@@ -103,5 +109,6 @@ def create_mealdb_test_page(result_display):
     main_box.add(category_button)
     main_box.add(grocery_button)
     main_box.add(favorite_button)
+    main_box.add(result_display)
 
     return main_box
