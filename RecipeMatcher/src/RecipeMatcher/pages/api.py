@@ -144,51 +144,60 @@ def add_user(username, email, password):
         return f"An error occurred: {str(e)}"
 ##Chat GPT code
 load_dotenv()
-
 class ChatBot:
     def __init__(self, api_key):
-        # Set your OpenAI API key
         self.client = OpenAI(api_key=api_key)
-        self.conversation_history = []  # Store the conversation history
-        self.default_persona = (
-            "You are a helpful chef that generates meal plans and recipes."
-        )  # Default persona
+        self.conversation_history = []  # For chatBotPage
+        self.query_history = []  # For mealQueryPage
+        self.default_persona = "You are a helpful chef that generates meal plans and recipes."
 
     def set_persona(self, persona):
         """Set a new AI persona."""
         self.default_persona = persona
         self.messages = [{"role": "system", "content": self.default_persona}]
 
-
-    def generate_meal_plan(self, prompt):
-        """
-        Calls OpenAI API to generate a meal plan while maintaining conversation history.
-        """
+    def chat_with_ai(self, user_input):
+        """Handles conversational interaction for chatBotPage."""
         try:
-            # Append the user's input to the conversation history
-            self.conversation_history.append({"role": "user", "content": prompt})
-
-            # Call the API with the conversation history
+            self.messages.append({"role": "user", "content": user_input})
             completion = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=self.conversation_history,
-                temperature=0.5,
-                max_tokens=100,
+                messages=self.messages,
+                temperature=0.7,
+                max_tokens=150,
             )
-
-            # Extract the response
             response = completion.choices[0].message.content
-
-            # Append the AI's response to the conversation history
-            self.conversation_history.append({"role": "assistant", "content": response})
-
+            self.messages.append({"role": "assistant", "content": response})
             return response
         except Exception as e:
-            print(f"Error during OpenAI API call: {e}")
-            return "Sorry, there was an error while generating the response."
+            return f"Error: {e}"
+
+    def generate_meal_suggestion(self, meal_time, flavor, nutrition_focus):
+        """Generates meal suggestions for mealQueryPage."""
+        try:
+            prompt = (
+                f"Generate a creative {meal_time} recipe that is {flavor} in flavor and "
+                f"focuses on {nutrition_focus}. Provide ingredients and instructions."
+            )
+            self.query_history.append({"role": "user", "content": prompt})
+            completion = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=self.query_history,
+                temperature=0.7,
+                max_tokens=200,
+            )
+            response = completion.choices[0].message.content
+            self.query_history.append({"role": "assistant", "content": response})
+            return response
+        except Exception as e:
+            return f"Error: {e}"
 
     def clear_conversation(self):
-        """
-        Clears the conversation history for a new session.
-        """
-        self.conversation_history = []
+        """Clear chatBotPage history."""
+        self.messages = [{"role": "system", "content": self.default_persona}]
+
+    def clear_meal_query(self):
+        """Clear mealQueryPage history."""
+        self.query_history = []
+
+# Other API methods for MealDB remain unchanged

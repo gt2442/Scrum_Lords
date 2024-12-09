@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for
 from .models import User, db
 from authlib.integrations.flask_client import OAuth
 import os
@@ -7,6 +7,8 @@ main_routes = Blueprint('main_routes', __name__)
 
 # OAuth Configuration
 oauth = OAuth()
+
+# Define the Google OAuth configuration
 google = oauth.register(
     name='google',
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
@@ -71,9 +73,8 @@ def add_user():
 # Route: Google OAuth login
 @main_routes.route('/login/google')
 def google_login():
-    redirect_uri = url_for('google_authorized', _external=True)
+    redirect_uri = url_for('main_routes.google_authorized', _external=True)
     return google.authorize_redirect(redirect_uri)
-
 
 # Route: Google OAuth authorized callback
 @main_routes.route('/login/google/authorized')
