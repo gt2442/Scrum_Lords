@@ -102,6 +102,13 @@ def create_home_page(app, on_sign_up, on_user_profile):
     )
     main_box.add(user_profile_button)
 
+    meal_query_button = toga.Button(
+    "Meal Query Page", 
+    style=Pack(padding=5),
+    on_press=app.show_meal_query_page
+    )
+    main_box.add(meal_query_button)
+
     # Optional image for visual enhancement
     try:
         image = toga.Image("/Users/gt/Downloads/chef hat logo.png")  # Replace with your image path
