@@ -4,7 +4,6 @@ from authlib.integrations.flask_client import OAuth
 import os
 
 main_routes = Blueprint('main_routes', __name__)
-app = Blueprint('app', __name__)
 
 # OAuth Configuration
 oauth = OAuth()
@@ -99,9 +98,14 @@ def google_authorized():
         "message": f"Logged in as {user.username} via Google."
     })
 
-# Route: Current user (Optional)
 @main_routes.route('/current-user', methods=['GET'])
 def current_user():
     """Retrieve the logged-in user's state."""
-    # Placeholder for session or token-based user management
-    return jsonify({"error": "No active session"})
+    # Here you would integrate session or token management
+    from flask import session  # Example: Session management
+    user = session.get('user')  # Replace with your session or token logic
+    if not user:
+        return jsonify({"error": "No user is logged in."}), 401
+    return jsonify(user)
+
+

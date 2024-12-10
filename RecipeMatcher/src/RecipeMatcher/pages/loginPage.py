@@ -2,7 +2,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN
 import webbrowser  # To open the OAuth URL in the default web browser
-from .api import authenticate_user, fetch_users, add_user
+from .api import authenticate_user, fetch_users, add_user, fetch_current_user
 
 def create_login_page(app):
     """Create the login page UI."""
@@ -22,6 +22,7 @@ def create_login_page(app):
     def login_action(widget):
         username = username_input.value
         password = password_input.value
+
         if not username or not password:
             result_display.value = "Please enter both username and password."
             return
@@ -33,6 +34,7 @@ def create_login_page(app):
         else:
             result_display.value = f"Welcome, {result['username']}!"
             app.logged_in_user = result  # Store logged-in user in the app instance
+            update_login_state(app, result_display)  # Optionally update the UI
 
     login_button = toga.Button("Login", on_press=login_action, style=Pack(padding=5))
 
@@ -64,12 +66,32 @@ def create_login_page(app):
 
     # Google OAuth Login
     def google_login_action(widget):
-        # Open the browser to initiate the Google OAuth flow
+        # Open the browser for Google login
         oauth_url = "http://localhost:5000/login/google"
         webbrowser.open(oauth_url)
         result_display.value = "Opened browser for Google login. Complete the process there."
 
+        # Fetch the logged-in user from the backend after login
+        def fetch_logged_in_user():
+            response = fetch_current_user()  # API call to fetch current user
+            if "error" in response:
+                result_display.value = "User is not logged in."
+            else:
+                app.logged_in_user = response  # Store logged-in user in the app instance
+                result_display.value = f"Welcome, {response['username']}!"
+                update_login_state(app, result_display)  # Optionally update the UI
+
+        fetch_logged_in_user()
+
     google_login_button = toga.Button("Login with Google", on_press=google_login_action, style=Pack(padding=5))
+
+    def update_login_state(app, result_display):
+        """Check and update the login state."""
+        user = app.logged_in_user
+        if user:
+            result_display.value = f"Welcome back, {user['username']}!"
+        else:
+            result_display.value = "You are not logged in."
 
     # Add components to the main box
     main_box.add(toga.Label("Login", style=Pack(padding=5)))
