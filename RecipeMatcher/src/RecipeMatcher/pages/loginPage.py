@@ -1,23 +1,25 @@
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN
+from toga.style.pack import COLUMN, ROW, CENTER
 import webbrowser  # To open the OAuth URL in the default web browser
 from .api import authenticate_user, fetch_users, add_user, fetch_current_user
+from RecipeMatcher.pages.style import LABEL_STYLE, BUTTON_STYLE, CONTAINER_STYLE
+
 
 def create_login_page(app):
     """Create the login page UI."""
-    main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+    main_box = toga.Box(style=CONTAINER_STYLE)
 
     # Display area for results or messages
     result_display = toga.MultilineTextInput(
         value="",
         readonly=True,
-        style=Pack(width=400, height=150, padding=(10, 0))
+        style=Pack(flex=1, height=100, padding=(10, 0), width=300)
     )
 
     # Login Form
-    username_input = toga.TextInput(placeholder="Enter username", style=Pack(padding=5))
-    password_input = toga.PasswordInput(placeholder="Enter password", style=Pack(padding=5))
+    username_input = toga.TextInput(placeholder="Enter username", style=Pack(padding=5, width=300))
+    password_input = toga.PasswordInput(placeholder="Enter password", style=Pack(padding=5, width=300))
     
     def login_action(widget):
         username = username_input.value
@@ -36,12 +38,12 @@ def create_login_page(app):
             app.logged_in_user = result  # Store logged-in user in the app instance
             update_login_state(app, result_display)  # Optionally update the UI
 
-    login_button = toga.Button("Login", on_press=login_action, style=Pack(padding=5))
+    login_button = toga.Button("Login", on_press=login_action, style=BUTTON_STYLE)
 
     # Signup Form
-    signup_username = toga.TextInput(placeholder="New username", style=Pack(padding=5))
-    signup_email = toga.TextInput(placeholder="New email", style=Pack(padding=5))
-    signup_password = toga.PasswordInput(placeholder="New password", style=Pack(padding=5))
+    signup_username = toga.TextInput(placeholder="New username", style=Pack(padding=5, width=300))
+    signup_email = toga.TextInput(placeholder="New email", style=Pack(padding=5, width=300))
+    signup_password = toga.PasswordInput(placeholder="New password", style=Pack(padding=5, width=300))
 
     def signup_action(widget):
         username = signup_username.value
@@ -55,14 +57,14 @@ def create_login_page(app):
         result = add_user(username, email, password)
         result_display.value = result
 
-    signup_button = toga.Button("Sign Up", on_press=signup_action, style=Pack(padding=5))
+    signup_button = toga.Button("Sign Up", on_press=signup_action, style=BUTTON_STYLE)
 
     # Fetch Users (for debugging purposes)
     def fetch_users_action(widget):
         users = fetch_users()
         result_display.value = users
 
-    fetch_users_button = toga.Button("Fetch Users", on_press=fetch_users_action, style=Pack(padding=5))
+    fetch_users_button = toga.Button("Fetch Users", on_press=fetch_users_action, style=Pack(padding=5, width=300))
 
     # Google OAuth Login
     def google_login_action(widget):
@@ -83,7 +85,7 @@ def create_login_page(app):
 
         fetch_logged_in_user()
 
-    google_login_button = toga.Button("Login with Google", on_press=google_login_action, style=Pack(padding=5))
+    google_login_button = toga.Button("Login with Google", on_press=google_login_action, style=BUTTON_STYLE)
 
     def update_login_state(app, result_display):
         """Check and update the login state."""
@@ -94,13 +96,13 @@ def create_login_page(app):
             result_display.value = "You are not logged in."
 
     # Add components to the main box
-    main_box.add(toga.Label("Login", style=Pack(padding=5)))
+    main_box.add(toga.Label("Login", style=LABEL_STYLE))
     main_box.add(username_input)
     main_box.add(password_input)
     main_box.add(login_button)
     main_box.add(google_login_button)
 
-    main_box.add(toga.Label("Sign Up", style=Pack(padding=5)))
+    main_box.add(toga.Label("Sign Up", style=LABEL_STYLE))
     main_box.add(signup_username)
     main_box.add(signup_email)
     main_box.add(signup_password)

@@ -48,9 +48,8 @@ class RecipeMatcher(toga.App):
         buttons = [
             ("Home Page", self.show_home_page),
             ("Login Page", self.show_login_page),
-            ("MealDB Test Page", self.show_mealdb_test_page),
-            ("ChatBot Page", self.show_chatbot_page),
-            ("User Profile", self.show_user_profile_page),
+            ("Meal catalog", self.show_mealdb_test_page),
+            ("Chatbot Page", self.show_chatbot_page),
             ("Meal Query Page", self.show_meal_query_page),
         ]
 
@@ -63,7 +62,7 @@ class RecipeMatcher(toga.App):
     def show_home_page(self, widget=None):
         """Display the Home Page."""
         self.clear_content_box()
-        home_page = create_home_page(self, self.show_login_page, self.show_user_profile_page)
+        home_page = create_home_page(self, self.show_login_page, self.show_mealdb_test_page)
         self.content_box.add(home_page)
 
     def show_login_page(self, widget=None):

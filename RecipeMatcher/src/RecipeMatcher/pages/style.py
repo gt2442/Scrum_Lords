@@ -18,5 +18,5 @@ MEDIUM_GRAY = "#D3D3D3"
 DARK_GRAY = "#A9A9A9"
 
 LABEL_STYLE = Pack(color=PRIMARY_BLUE, font_size=18)
-BUTTON_STYLE = Pack(background_color=DARK_BLUE, color="white", padding=10)
+BUTTON_STYLE = Pack(background_color=DARK_BLUE, color="white", padding=10, flex = 1)
 CONTAINER_STYLE = Pack(background_color=BACKGROUND_BLUE, direction = COLUMN, padding=20, alignment=CENTER)
