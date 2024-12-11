@@ -1,26 +1,26 @@
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, CENTER, ROW
+from toga.style.pack import COLUMN, CENTER
 from .api import search_meal_by_name, get_random_meal, list_all_categories, generate_grocery_list, add_to_favorites
 from RecipeMatcher.pages.style import LABEL_STYLE, BUTTON_STYLE, CONTAINER_STYLE
 
-
 def create_mealdb_test_page(result_display):
+    # Main container with styling
     main_box = toga.Box(style=CONTAINER_STYLE)
 
     result_display = toga.MultilineTextInput(
         value="",
         readonly=True,
-        style=Pack(flex=1, height=100, padding=(10, 0), width=300)
+        style=Pack(flex=1, height=150, padding=(10, 0), width=400)
     )
 
     grocery_list_display = toga.MultilineTextInput(
         value="",
         readonly=True,
-        style=Pack(flex=1, height=100, padding=(10, 0), width=300)
+        style=Pack(flex=1, height=150, padding=(10, 0), width=400)
     )
 
-    meal_name_input = toga.TextInput(placeholder="Enter Search", style=Pack(padding=5, width=300))
+    meal_name_input = toga.TextInput(placeholder="Enter Search", style=Pack(padding=5, width=400))
 
     grocery_ingredients = []
     current_meal_instructions = ""  # To store the instructions of the currently selected meal
@@ -33,12 +33,12 @@ def create_mealdb_test_page(result_display):
         if result.get("meals"):
             meals = result["meals"]
             grocery_ingredients = [
-                meal.get("strIngredient" + str(i), "") for meal in meals for i in range(1, 21) 
+                meal.get("strIngredient" + str(i), "").strip() for meal in meals for i in range(1, 21) 
                 if meal.get("strIngredient" + str(i))
             ]
-            current_meal_instructions = meals[0].get("strInstructions", "No instructions available.")
+            current_meal_instructions = meals[0].get("strInstructions", "No instructions available.").strip()
             display_text = "\n".join(
-                f"Meal: {meal.get('strMeal', 'N/A')} | Category: {meal.get('strCategory', 'N/A')}"
+                f"Meal: {meal.get('strMeal', 'N/A').strip()} | Category: {meal.get('strCategory', 'N/A').strip()}"
                 for meal in meals
             )
         else:
@@ -58,19 +58,16 @@ def create_mealdb_test_page(result_display):
 
     select_button = toga.Button("Select", on_press=display_cooking_instructions_action, style=BUTTON_STYLE)
 
-    # Button to get a random meal
     def get_random_meal_action(widget):
         result = get_random_meal()
 
-        # Debugging: Print the API response to check the structure
         print("API Response:", result)  # Debugging line
         
-        # Check if "meals" exists and is not empty
         if result.get("meals"):
             meal = result["meals"][0]
-            meal_name = meal.get("strMeal", "N/A")  # Correct key for meal name
-            meal_category = meal.get("strCategory", "N/A")  # Correct key for category
-            meal_instructions = meal.get("strInstructions", "N/A")  # Correct key for instructions
+            meal_name = meal.get("name", "N/A").strip()
+            meal_category = meal.get("category", "N/A").strip()
+            meal_instructions = meal.get("instructions", "No instructions available.").strip()
             
             display_text = f"Random Meal:\nName: {meal_name}\nCategory: {meal_category}\nInstructions: {meal_instructions}"
         else:
@@ -95,7 +92,7 @@ def create_mealdb_test_page(result_display):
 
     def generate_grocery_list_action(widget):
         if grocery_ingredients:
-            display_text = generate_grocery_list(grocery_ingredients)
+            display_text = "Grocery List:\n" + "\n".join(grocery_ingredients)
         else:
             display_text = "Please search for a meal first to generate a grocery list."
         
@@ -105,7 +102,7 @@ def create_mealdb_test_page(result_display):
 
     def add_to_favorites_action(widget):
         user_id = "test_user"
-        meal_name = meal_name_input.value
+        meal_name = meal_name_input.value.strip()
         result = add_to_favorites(user_id, meal_name)
         if "success" in result:
             display_text = result["success"]
@@ -115,9 +112,10 @@ def create_mealdb_test_page(result_display):
 
     favorite_button = toga.Button("Add Meal To Favorites", on_press=add_to_favorites_action, style=BUTTON_STYLE)
 
+    # Add components to the main box
     main_box.add(meal_name_input)
     main_box.add(search_button)
-    main_box.add(select_button)  # Add the "Select" button directly under the search button
+    main_box.add(select_button)
     main_box.add(random_button)
     main_box.add(category_button)
     main_box.add(grocery_button)
