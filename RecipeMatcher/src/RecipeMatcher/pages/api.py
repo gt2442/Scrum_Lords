@@ -167,6 +167,7 @@ class ChatBot:
         self.conversation_history = []  # For chatBotPage
         self.query_history = []  # For mealQueryPage
         self.default_persona = "You are a helpful chef that generates meal plans and recipes."
+        self.messages = [{"role": "system", "content": self.default_persona}]  # Initialize self.messages
 
     def set_persona(self, persona):
         """Set a new AI persona."""
